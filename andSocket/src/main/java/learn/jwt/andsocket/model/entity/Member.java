@@ -1,9 +1,6 @@
 package learn.jwt.andsocket.model.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -24,5 +21,13 @@ public class Member {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "authority")
+    private Role role;
 
+    @Builder
+    public Member(String username, String password,Role role) {
+        this.username = username;
+        this.password = password;
+        this.role=role;
+    }
 }
