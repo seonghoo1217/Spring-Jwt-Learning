@@ -19,7 +19,7 @@ public class MemberService {
     public String SignUpApi(MemberDTO.SignUpDTO signUpDTO) throws Exception{
         if (signUpDTO.getUsername().equals(null)||signUpDTO.getPassword().equals(null)){
             throw new IllegalStateException("아이디 또는 비밀번호가 입력되지 않았습니다.");
-        }else if (signUpDTO.getPassword().matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}")){
+        }else if (!signUpDTO.getPassword().matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}")){
             return "비밀번호 양식을 지켜주세요";
         }else {
             signUpDTO.setRole(Role.MEMBER);
