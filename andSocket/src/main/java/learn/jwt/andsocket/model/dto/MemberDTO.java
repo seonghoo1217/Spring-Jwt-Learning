@@ -33,4 +33,16 @@ public class MemberDTO {
                     .build();
         }
     }
+
+    @Getter
+    public class DeleteDTO{
+        private Long id;
+    }
+
+    @Getter
+    @Setter
+    public class ChangeStateDTO{
+        private String username;
+        private String password;
+    }
 }

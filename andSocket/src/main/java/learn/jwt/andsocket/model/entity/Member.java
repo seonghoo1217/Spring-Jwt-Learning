@@ -1,5 +1,6 @@
 package learn.jwt.andsocket.model.entity;
 
+import learn.jwt.andsocket.model.dto.MemberDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,5 +30,15 @@ public class Member {
         this.username = username;
         this.password = password;
         this.role=role;
+    }
+
+    public boolean ChangeMemberState(MemberDTO.ChangeStateDTO changeStateDTO){
+        if (changeStateDTO.getUsername()==null&&changeStateDTO.getPassword()==null){
+            return false;
+        }else {
+            this.username=changeStateDTO.getUsername();
+            this.password=changeStateDTO.getPassword();
+            return true;
+        }
     }
 }
