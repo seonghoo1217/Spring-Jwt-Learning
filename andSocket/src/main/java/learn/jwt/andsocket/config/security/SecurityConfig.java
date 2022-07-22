@@ -2,7 +2,10 @@ package learn.jwt.andsocket.config.security;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import learn.jwt.andsocket.repository.MemberRepository;
+import learn.jwt.andsocket.config.jwt.JsonUsernamePasswordAuthenticationFilter;
+import learn.jwt.andsocket.handler.LoginFailureHandler;
+import learn.jwt.andsocket.handler.LoginSuccessJWTProvideHandler;
+import learn.jwt.andsocket.service.login.ApiLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +20,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ObjectMapper objectMapper;
+
+    private final ApiLoginService loginService;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -41,11 +47,43 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**","/api/**").permitAll()
+                .antMatchers("/api/v1/login","/api/v1/member","/").permitAll()
                 .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .anyRequest().authenticated();
 
+        http.addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(){
+        DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(loginService);
+        return new ProviderManager(provider);
+    }
+
+    @Bean
+    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
+        return new LoginSuccessJWTProvideHandler();
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler(){
+        return new LoginFailureHandler();
+    }
+
+    @Bean
+    public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter(){
+        JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter=new JsonUsernamePasswordAuthenticationFilter(objectMapper);
+        jsonUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
+        jsonUsernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
+        jsonUsernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler());
+        return jsonUsernamePasswordAuthenticationFilter;
+    }
 }
 

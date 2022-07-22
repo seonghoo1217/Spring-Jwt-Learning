@@ -25,7 +25,7 @@ public class MemberController {
         return new ResponseEntity<>(members,HttpStatus.OK);
     }
 
-    @PostMapping("/member")
+    @PostMapping("/v1/member")
     public ResponseEntity<String> signup(MemberDTO.SignUpDTO signUpDTO){
         String signUpAPiState = memberService.SignUpApi(signUpDTO);
         return new ResponseEntity<>(signUpAPiState, HttpStatus.OK);

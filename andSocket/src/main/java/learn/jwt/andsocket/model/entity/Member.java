@@ -23,6 +23,7 @@ public class Member {
     private String password;
 
     @Column(name = "authority")
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Builder
