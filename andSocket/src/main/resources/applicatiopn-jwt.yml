@@ -1,0 +1,10 @@
+jwt:
+  secret: #추후 로직 + secretmanager로 암호화
+
+  access:
+    expiration: 86400 #3600*24
+    header: Authorization
+
+  refresh:
+    expiration: 604800 #3600*24*7
+    header: Authorization-refresh

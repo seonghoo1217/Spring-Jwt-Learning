@@ -26,11 +26,25 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+
+    @Column(length = 1000)
+    private String refreshToken;
+
+
+
     @Builder
     public Member(String username, String password,Role role) {
         this.username = username;
         this.password = password;
         this.role=role;
+    }
+
+    public void changeRefreshToken(String refreshToken){
+        this.refreshToken=refreshToken;
+    }
+
+    public void destroyRefreshToken(String refreshToken){
+        this.refreshToken=null;
     }
 
     public boolean ChangeMemberState(MemberDTO.ChangeStateDTO changeStateDTO){
