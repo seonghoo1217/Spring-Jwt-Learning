@@ -43,7 +43,7 @@ public class Member {
         this.refreshToken=refreshToken;
     }
 
-    public void destroyRefreshToken(String refreshToken){
+    public void destroyRefreshToken(){
         this.refreshToken=null;
     }
 

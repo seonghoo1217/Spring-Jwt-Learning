@@ -1,5 +1,5 @@
 jwt:
-  secret: #추후 로직 + secretmanager로 암호화
+  secret: {jwt-secret-key}
 
   access:
     expiration: 86400 #3600*24

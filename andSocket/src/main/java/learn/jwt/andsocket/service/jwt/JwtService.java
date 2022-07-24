@@ -1,4 +1,4 @@
-package learn.jwt.andsocket.repository.jwt;
+package learn.jwt.andsocket.service.jwt;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
