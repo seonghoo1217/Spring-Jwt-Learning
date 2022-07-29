@@ -1,4 +1,4 @@
-package learn.jwt.andsocket.config.jwt;
+package learn.jwt.andsocket.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationServiceException;

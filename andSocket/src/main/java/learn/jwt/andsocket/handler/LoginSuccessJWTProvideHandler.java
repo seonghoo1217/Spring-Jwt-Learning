@@ -1,5 +1,8 @@
 package learn.jwt.andsocket.handler;
 
+import learn.jwt.andsocket.repository.MemberRepository;
+import learn.jwt.andsocket.service.jwt.JwtService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,15 +14,30 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Log4j2
+@RequiredArgsConstructor
 public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private final JwtService jwtService;
+    private final MemberRepository memberRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 로그인 User : ",userDetails.getUsername());
+        String username = extractUsername(authentication);
+        String accessToken = jwtService.createAccessToken(username);
+        String refreshToken = jwtService.createRefreshToken();
 
-        response.getWriter().write("로그인에 성공합니다.");
-        response.setStatus(200);
+        jwtService.sendAccessAndRefreshToken(response,accessToken,refreshToken);
+        memberRepository.findByUsername(username).ifPresent(
+                m->m.changeRefreshToken(refreshToken)
+        );
+        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 로그인 User : ",username);
+        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 AccessToken : ",accessToken);
+        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 RefreshToken : ",refreshToken);
     }
 
+
+    private String extractUsername(Authentication authentication){
+        UserDetails principal = (UserDetails) authentication.getPrincipal();
+        return principal.getUsername();
+    }
 }

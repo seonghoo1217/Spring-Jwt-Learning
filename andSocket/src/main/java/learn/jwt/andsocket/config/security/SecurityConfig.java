@@ -2,9 +2,12 @@ package learn.jwt.andsocket.config.security;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import learn.jwt.andsocket.config.jwt.JsonUsernamePasswordAuthenticationFilter;
+import learn.jwt.andsocket.filter.JsonUsernamePasswordAuthenticationFilter;
+import learn.jwt.andsocket.filter.JwtAuthenticationProcessingFilter;
 import learn.jwt.andsocket.handler.LoginFailureHandler;
 import learn.jwt.andsocket.handler.LoginSuccessJWTProvideHandler;
+import learn.jwt.andsocket.repository.MemberRepository;
+import learn.jwt.andsocket.service.jwt.JwtService;
 import learn.jwt.andsocket.service.login.ApiLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +34,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ApiLoginService loginService;
 
+    private final MemberRepository memberRepository;
+
+    private final JwtService jwtService;
+
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web){
         web.ignoring().antMatchers("/swagger/**","/webjars/**","/css/**","/js/**","/lib/**");
     }
 
@@ -48,10 +55,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/login","/api/v1/member","/").permitAll()
-                .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
+        http.addFilterBefore(jwtAuthenticationProcessingFilter(),JsonUsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -69,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler();
+        return new LoginSuccessJWTProvideHandler(jwtService,memberRepository);
     }
 
     @Bean
@@ -84,6 +92,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         jsonUsernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
         jsonUsernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler());
         return jsonUsernamePasswordAuthenticationFilter;
+    }
+
+    @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
+        JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
+
+        return jsonUsernamePasswordLoginFilter;
     }
 }
 
