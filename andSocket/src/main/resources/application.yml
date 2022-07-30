@@ -1,20 +1,26 @@
 spring:
-  redis:
-    host: localhost
-    password:
-    port: 6379
-    jedis:
-      pool:
-        max-idle: 8
-        min-idle: 0
-        max-active: 8
-        max-wait: -1
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+
+#  redis:
+#    host: localhost
+#    password:
+#    port: 6379
+#    jedis:
+#      pool:
+#        max-idle: 8
+#        min-idle: 0
+#        max-active: 8
+#        max-wait: -1
 
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/jpa
+    jdbc-url: jdbc:h2:~/test
     username: sa
-    password: 1
+    password:
 
 
     jpa:
