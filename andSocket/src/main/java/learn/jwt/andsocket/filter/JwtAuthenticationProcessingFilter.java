@@ -30,17 +30,19 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final String NO_CHECK_URL="/api/v1/login";
 
+    private final String TEST="/ping";
 
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (request.getRequestURI().equals(NO_CHECK_URL)){
-            System.out.println("request = " + request);
-            System.out.println("response = " + response);
-            System.out.println("filterChain = " + filterChain);
             filterChain.doFilter(request,response);
             return;
+        }else {
+            System.out.println("request = " + request.getRequestURI());
+            System.out.println("request.header = " + request.getHeader("Authorization"));
+            System.out.println("request.getHeader(\"Authorization-refresh\") = " + request.getHeader("Authorization-refresh"));
         }
 
         String refreshToken = jwtService
@@ -49,8 +51,10 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 .orElse(null);
 
         if (refreshToken!=null) {
-
+            checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
+            return;
         }
+        checkAccessTokenAndAuthentication(request, response, filterChain);
     }
     private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         jwtService.extractAccessToken(request).filter(jwtService::isTokenValid).ifPresent(

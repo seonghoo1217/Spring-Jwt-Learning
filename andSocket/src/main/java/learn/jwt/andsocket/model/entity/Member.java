@@ -2,6 +2,7 @@ package learn.jwt.andsocket.model.entity;
 
 import learn.jwt.andsocket.model.dto.MemberDTO;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 
@@ -13,13 +14,13 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "memberId")
+    @Column(name = "memberId",nullable = false)
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username",nullable = false)
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password",nullable = false)
     private String password;
 
     @Column(name = "authority")
@@ -55,5 +56,13 @@ public class Member {
             this.password=changeStateDTO.getPassword();
             return true;
         }
+    }
+    //권한 추가
+    public void addMemberAuthority(){
+        this.role=Role.MEMBER;
+    }
+
+    public void encodeToPassword(PasswordEncoder passwordEncoder){
+        this.password=passwordEncoder.encode(password);
     }
 }

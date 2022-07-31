@@ -39,8 +39,8 @@ dependencies {
 
     //=============================DB======================================
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-    runtimeOnly 'com.h2database:h2'
-    implementation("com.h2database:h2")
+//    runtimeOnly 'com.h2database:h2'
+//    implementation("com.h2database:h2")
     //======================================================================
 
     ///////////////////////////////////Json//////////////////////////////////

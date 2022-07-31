@@ -1,12 +1,16 @@
 package learn.jwt.andsocket.service;
 
+import learn.jwt.andsocket.exception.member.MemberException;
+import learn.jwt.andsocket.exception.member.MemberExceptionType;
 import learn.jwt.andsocket.model.dto.MemberDTO;
 import learn.jwt.andsocket.model.entity.Member;
 import learn.jwt.andsocket.model.entity.Role;
 import learn.jwt.andsocket.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+//import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +25,21 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
-    public String SignUpApi(MemberDTO.SignUpDTO signUpDTO) throws IllegalStateException{
-        if (signUpDTO.getUsername().equals(null)||signUpDTO.getPassword().equals(null)){
-            throw new IllegalStateException("아이디 또는 비밀번호가 입력되지 않았습니다.");
+    public String SignUpApi(MemberDTO.SignUpDTO signUpDTO) throws MemberException{
+        if (signUpDTO.getUsername() == null || signUpDTO.getPassword() == null){
+            throw new MemberException(MemberExceptionType.NULL_OF_USERNAME_OR_PASSWORD);
         }else if (!signUpDTO.getPassword().matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}")){
-//            return "비밀번호 양식을 지켜주세요";
-            throw new BadCredentialsException("비밀번호 양식을 지켜주세요");
-        }else {
-            signUpDTO.setRole(Role.MEMBER);
-            memberRepository.save(signUpDTO.toEntity());
+            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
+        }else if(memberRepository.findByUsername(signUpDTO.getUsername()).isPresent()) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
+        } else{
+            Member member = signUpDTO.toEntity();
+            member.addMemberAuthority();
+            member.encodeToPassword(passwordEncoder);
+            memberRepository.save(member);
             return "회원가입이 정상적으로 동작하였습니다.";
         }
     }

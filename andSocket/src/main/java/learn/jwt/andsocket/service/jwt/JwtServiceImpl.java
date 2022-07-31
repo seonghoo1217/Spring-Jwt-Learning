@@ -3,6 +3,9 @@ package learn.jwt.andsocket.service.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import learn.jwt.andsocket.exception.member.MemberException;
+import learn.jwt.andsocket.exception.member.MemberExceptionType;
+import learn.jwt.andsocket.model.entity.Member;
 import learn.jwt.andsocket.repository.MemberRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -83,7 +86,7 @@ public class JwtServiceImpl implements JwtService{
         memberRepository.findByUsername(username)
                 .ifPresentOrElse(
                         member -> member.changeRefreshToken(refreshToken),
-                        () -> new Exception("회원이 없습니다")
+                        () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
                 );
     }
 
@@ -94,7 +97,7 @@ public class JwtServiceImpl implements JwtService{
         memberRepository.findByUsername(username)
                 .ifPresentOrElse(
                         member -> member.destroyRefreshToken(),
-                        () -> new Exception("회원이 없습니다")
+                        () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
                 );
     }
 
@@ -164,6 +167,7 @@ public class JwtServiceImpl implements JwtService{
     }
     @Override
     public boolean isTokenValid(String token){
+        log.info("TOken Valid ={}",token);
         try {
             JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
             return true;

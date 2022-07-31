@@ -1,5 +1,6 @@
 package learn.jwt.andsocket.handler;
 
+import learn.jwt.andsocket.model.entity.Member;
 import learn.jwt.andsocket.repository.MemberRepository;
 import learn.jwt.andsocket.service.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +28,17 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
         String refreshToken = jwtService.createRefreshToken();
 
         jwtService.sendAccessAndRefreshToken(response,accessToken,refreshToken);
-        memberRepository.findByUsername(username).ifPresent(
-                m->m.changeRefreshToken(refreshToken)
-        );
-        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 로그인 User : ",username);
-        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 AccessToken : ",accessToken);
-        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 RefreshToken : ",refreshToken);
+//        memberRepository.findByUsername(username).ifPresent(
+//                m->m.changeRefreshToken(refreshToken)
+//        );
+        /*Member member = memberRepository.findByUsername(username).get();
+        member.changeRefreshToken(refreshToken);*/
+        jwtService.updateRefreshToken(username,refreshToken);
+
+
+        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 로그인 User ={} ",username);
+        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 AccessToken ={} ",accessToken);
+        log.info("로그인에 성공하고 JWT 토큰을 발급합니다 현재 RefreshToken ={} ",refreshToken);
     }
 
 

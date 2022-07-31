@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @Log4j2
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class MemberController {
 
     private final MemberService memberService;
@@ -25,8 +25,11 @@ public class MemberController {
         return new ResponseEntity<>(members,HttpStatus.OK);
     }
 
-    @PostMapping("/v1/member")
-    public ResponseEntity<String> signup(MemberDTO.SignUpDTO signUpDTO){
+    @PostMapping("/member")
+    public ResponseEntity<String> signup(@RequestBody MemberDTO.SignUpDTO signUpDTO){
+        log.info("회원가입");
+        log.info("아이디 ={}",signUpDTO.getUsername());
+        log.info("signUpDto ={}",signUpDTO);
         String signUpAPiState = memberService.SignUpApi(signUpDTO);
         return new ResponseEntity<>(signUpAPiState, HttpStatus.OK);
     }
@@ -42,6 +45,5 @@ public class MemberController {
         String deleteApiState = memberService.MemberDeleteApi(deleteDTO);
         return new ResponseEntity<>(deleteApiState,HttpStatus.OK);
     }
-
 
 }
