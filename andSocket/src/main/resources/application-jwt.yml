@@ -1,5 +1,5 @@
 jwt:
-  secret: JwtAPIServiceAndWebSocketProject
+  secret: Snd0QVBJU2VydmljZUFuZFdlYlNvY2tldFByb2plY3Q= #JwtAPIServiceAndWebSocketProject
 
   access:
     expiration: 86400 #3600*24

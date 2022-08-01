@@ -4,6 +4,7 @@ import learn.jwt.andsocket.model.entity.Member;
 import learn.jwt.andsocket.repository.MemberRepository;
 import learn.jwt.andsocket.service.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Log4j2
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -30,7 +32,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final String NO_CHECK_URL="/api/v1/login";
 
-    private final String TEST="/ping";
 
 
 
@@ -49,7 +50,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 .extractRefreshToken(request)
                 .filter(jwtService::isTokenValid)
                 .orElse(null);
-
+        System.out.println("refreshToken = " + refreshToken);
         if (refreshToken!=null) {
             checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
             return;
@@ -57,8 +58,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         checkAccessTokenAndAuthentication(request, response, filterChain);
     }
     private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("jwtService = " + jwtService.extractAccessToken(request).filter(jwtService::isTokenValid));
         jwtService.extractAccessToken(request).filter(jwtService::isTokenValid).ifPresent(
-
                 accessToken -> jwtService.extractUsername(accessToken).ifPresent(
 
                         username -> memberRepository.findByUsername(username).ifPresent(
@@ -67,7 +68,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                         )
                 )
         );
-
+        log.info("TokenValid들어옴");
         filterChain.doFilter(request,response);
     }
 
@@ -87,8 +88,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
-
-
         memberRepository.findByRefreshToken(refreshToken).ifPresent(
                 member -> jwtService.sendAccessToken(response, jwtService.createAccessToken(member.getUsername()))
         );

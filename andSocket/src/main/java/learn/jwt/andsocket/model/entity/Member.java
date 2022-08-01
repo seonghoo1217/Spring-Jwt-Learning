@@ -41,6 +41,7 @@ public class Member {
     }
 
     public void changeRefreshToken(String refreshToken){
+        System.out.println("토큰이 변경되었습니다");
         this.refreshToken=refreshToken;
     }
 

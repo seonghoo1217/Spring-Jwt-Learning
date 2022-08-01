@@ -2,6 +2,8 @@ package learn.jwt.andsocket.service.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import learn.jwt.andsocket.exception.member.MemberException;
 import learn.jwt.andsocket.exception.member.MemberExceptionType;
@@ -44,13 +46,13 @@ public class JwtServiceImpl implements JwtService{
 
     private static String SECRET_KEY = "";
 
-    @PostConstruct
-    public void secretKeyEncode() throws UnsupportedEncodingException {
-        byte[] secretBytes = secret.getBytes("UTF-8");
-        Base64.Encoder encoder = Base64.getEncoder();
-        byte[] enCodeBytes = encoder.encode(secretBytes);
-        SECRET_KEY = new String(enCodeBytes);
-    }
+//    @PostConstruct
+//    public void secretKeyEncode() throws UnsupportedEncodingException {
+//        byte[] secretBytes = secret.getBytes("UTF-8");
+//        Base64.Encoder encoder = Base64.getEncoder();
+//        byte[] enCodeBytes = encoder.encode(secretBytes);
+//        SECRET_KEY = new String(enCodeBytes);
+//    }
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -70,7 +72,7 @@ public class JwtServiceImpl implements JwtService{
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenValidityInSeconds * 1000))
                 .withClaim(USERNAME_CLAIM, username)
-                .sign(Algorithm.HMAC512(SECRET_KEY));
+                .sign(Algorithm.HMAC512(secret));
     }
 
     @Override
@@ -78,7 +80,7 @@ public class JwtServiceImpl implements JwtService{
         return JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenValidityInSeconds * 1000))
-                .sign(Algorithm.HMAC512(SECRET_KEY));
+                .sign(Algorithm.HMAC512(secret));
     }
 
     @Override
@@ -139,10 +141,9 @@ public class JwtServiceImpl implements JwtService{
 
     @Override
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
+        log.info("refreshTokenIMPL ={}",request.getHeader(refreshHeader));
         return Optional.ofNullable(request.getHeader(refreshHeader)).filter(
-
                 refreshToken -> refreshToken.startsWith(BEARER)
-
         ).map(refreshToken -> refreshToken.replace(BEARER, ""));
     }
 
