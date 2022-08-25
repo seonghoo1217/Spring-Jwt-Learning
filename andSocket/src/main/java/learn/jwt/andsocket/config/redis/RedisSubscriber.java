@@ -27,13 +27,13 @@ public class RedisSubscriber implements MessageListener {
             ChatDTO chatDTO = objectMapper.readValue(publicshMessage,ChatDTO.class);
 
             switch(chatDTO.getMessageType().toString()){
-                case "chat":
+                case "CHAT":
                     messagingTemplate.convertAndSend("/sub/chat/room/"+chatDTO.getChatRoom().getId(),chatDTO);
                     break;
-                case "createRoom":
+                case "CRROOM":
                     messagingTemplate.convertAndSend("/sub/room/create",chatDTO);
                     break;
-                case "messageAll":
+                case "MSALL":
                     messagingTemplate.convertAndSend("/sub/chat/all",chatDTO);
                     break;
             }
