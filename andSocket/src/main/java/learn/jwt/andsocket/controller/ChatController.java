@@ -1,5 +1,6 @@
 package learn.jwt.andsocket.controller;
 
+import learn.jwt.andsocket.model.dto.ChatRoomDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,7 +8,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 public class ChatController {
 
-    @ResponseBody
+    /*@ResponseBody
     @PostMapping("/api/room/enter")
-    public ResponseEntity<?> enterTheRoom(@RequestBody ChatRoomDTO chatRoomDTO)
+    public ResponseEntity<?> enterTheRoom(@RequestBody ChatRoomDTO chatRoomDTO){
+        chatRoomDTO.getRoomName()
+    }*/
 }

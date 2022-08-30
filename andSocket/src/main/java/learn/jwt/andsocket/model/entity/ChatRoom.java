@@ -1,9 +1,6 @@
 package learn.jwt.andsocket.model.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -23,4 +20,14 @@ public class ChatRoom {
 
     @Column(name = "roomCode")
     private String roomCode;
+
+    @Column(name = "userLimit")
+    private int userLimit;
+
+    @Builder
+    public ChatRoom(String roomName,String roomCode) {
+        this.roomName = roomName;
+        this.roomCode =roomCode;
+    }
 }
+
