@@ -45,4 +45,11 @@ public class MemberDTO {
         private String username;
         private String password;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public class OnlyUsernameDTO{
+        private String username;
+    }
 }
