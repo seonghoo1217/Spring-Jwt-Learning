@@ -34,6 +34,15 @@ public class ChatMessage extends BaseEntity {
                 .build();
     }
 
+    @Builder
+    public ChatMessage(Long id, MessageType messageType, String writer, String message, ChatRoom chatRoom) {
+        this.id = id;
+        this.messageType = messageType;
+        this.writer = writer;
+        this.message = message;
+        this.chatRoom = chatRoom;
+    }
+
     public void setWriter(String writer){
         this.writer=writer;
     }
